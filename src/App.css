@@ -1,33 +1,99 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+#button {
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+#button:focus {
+  box-shadow: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+#button:hover {
+  background-color: white;
+  color: black;
+}
+
+#logo {
+  font-size: 32px;
+}
+
+#bd-navbar {
+  position: sticky;
+  background-color: #274c2d;
+  top: 0;
+  z-index: 1000;
+}
+
+.sb-item {
+  padding-right: 15px;
+}
+
+.list-group-item{
+  color: white;
+  padding: 0.2rem 1.25rem;
+  border: none;
+}
+
+.hd {
+  padding-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.hdul {
+  padding-top: 30px;
+}
+
+.hd:last-of-type {
+  padding-bottom: 0;
+}
+
+.list-group-item > a {
+  color: white;
+  text-decoration: none;
+}
+
+.list-group-item > a:hover {
+  color: darkolivegreen;
+  background: white;
+  width: 100vh;
+}
+
+.list-group-item:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.list-group-item:last-child {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.sb {
+  background-color: darkolivegreen;
+}
+
+.card {
+  margin-bottom: 1rem;
+}
+
+.modal {
+  z-index: 1072;
+}
+
+@media (min-width: 768px) {
+  #sidebar {
+    position: fixed;
+    top: 74px;
+    left: 0;
+    z-index: 100;
+    height: calc(100vh - 74px);
+    background: darkolivegreen;
+    overflow-y: auto;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 768px) {
+  .sb-links {
+    margin-right: -15px;
+    margin-left: -15px;
   }
 }
