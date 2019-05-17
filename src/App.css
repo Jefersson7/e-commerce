@@ -26,12 +26,6 @@
   padding-right: 15px;
 }
 
-.list-group-item{
-  color: white;
-  padding: 0.2rem 1.25rem;
-  border: none;
-}
-
 .hd {
   padding-bottom: 20px;
   font-size: 20px;
@@ -69,6 +63,9 @@
 
 .sb {
   background-color: darkolivegreen;
+  color: white;
+  padding: 0.2rem 1.25rem;
+  border: none;
 }
 
 .card {
@@ -77,6 +74,14 @@
 
 .modal {
   z-index: 1072;
+}
+
+.add {
+  padding-right: 5px;
+}
+
+.proof {
+  line-height: 2.3rem;
 }
 
 @media (min-width: 768px) {
@@ -95,5 +100,9 @@
   .sb-links {
     margin-right: -15px;
     margin-left: -15px;
+  }
+
+  .hdul {
+    padding-top: 0;
   }
 }

@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import React, { Component } from 'react';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingCart, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faShoppingCart, faChevronDown, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { categories } from './categories.json'
 import { products } from './products.json'
 
@@ -16,6 +16,7 @@ class App extends Component {
       filterPrice: null,
       filterStock: null,
       orderOption: null,
+      shoppingCartItems: localStorage,
       products: products
     }
   }
@@ -73,8 +74,29 @@ class App extends Component {
   }
 
   productSort = (products) => {
-    return products.sort((a, b) => this.convertOnNumber(a.price) - this.convertOnNumber(b.price))
+    let { orderOption } = this.state
+    switch (orderOption) {
+      case 1:
+        return products.sort((a, b) => this.convertOnNumber(a.price) - this.convertOnNumber(b.price))
+      case 2:
+        return products.sort(p => p.available ? -1 : 1)
+      case 3:
+        return products.sort((a, b) => a.quantity - b.quantity)
+      default:
+        return products
+    }
   }
+
+  storeProduct = (product) => {
+    localStorage.setItem(product.id, JSON.stringify(product))
+    this.setState({ shoppingCartItems: localStorage })
+  }
+
+  deleteItem = (product) => {
+    localStorage.removeItem(product)
+    this.setState({ shoppingCartItems: localStorage })
+  }
+
 
   renderCategories = (categories) => {
     return (
@@ -187,14 +209,38 @@ class App extends Component {
     )
   }
 
-  // onClick = () => {
-  //   console.log(products.filter(i => i.sublevel_id === 5)
-  //     .sort((a, b) => this.convertOnNumber(a.price) - this.convertOnNumber(b.price)))
-  // }
+  renderSorts = () => {
+    return (
+      <ul className='list-group'>
+        <li className='list-group-item sb'>
+          <div className='custom-control custom-radio'>
+            <input type='radio' class='custom-control-input' name='sort' id='sortPrice' value='price' onChange={() => this.setState({ orderOption: 1 })}></input>
+            <label class='custom-control-label' for='sortPrice'>Precio</label>
+          </div>
+        </li>
+        <li className='list-group-item sb'>
+          <div className='custom-control custom-radio'>
+            <input type='radio' class='custom-control-input' name='sort' id='sortAvailability' value='available' onChange={() => this.setState({ orderOption: 2 })}></input>
+            <label class='custom-control-label' for='sortAvailability'>Disponibilidad</label>
+          </div>
+        </li>
+        <li className='list-group-item sb'>
+          <div className='custom-control custom-radio'>
+            <input type='radio' class='custom-control-input' name='sort' id='sortQuantity' value='quantity' onChange={() => this.setState({ orderOption: 3 })}></input>
+            <label class='custom-control-label' for='sortQuantity'>Cantidad</label>
+          </div>
+        </li>
+      </ul>
+    )
+  }
 
   renderProducts = (products) => {
-    return this.productFilter(products)
+    return this.productSort(this.productFilter(products))
       .map(p => {
+        var opts = {}
+        if (!p.available) {
+          opts['disabled'] = 'disabled'
+        }
         return (
           <div className='col-md-4'>
             <div class='card'>
@@ -203,11 +249,40 @@ class App extends Component {
                 <h6 class='card-subtitle mb-2 text-muted'>{p.price}</h6>
                 <p class='card-text'>Cantidad: {p.quantity}</p>
                 <p class='card-text'>{p.available ? 'Disponible' : 'No Disponible'}</p>
+                <button type='button' className='btn btn-success d-flex float-right align-items-center' {...opts} onClick={() => this.storeProduct(p)}>
+                  <div className='add'>Add to Cart</div>
+                  <FontAwesomeIcon icon={faShoppingCart} />
+                </button>
               </div>
             </div>
           </div>
         )
       })
+  }
+
+  renderShoppingCart = () => {
+    let shoppingCart = []
+    let { shoppingCartItems } = this.state
+    var data = Object.assign({}, shoppingCartItems)
+    for (var i in data) {
+      var item = JSON.parse(shoppingCartItems[i])
+      shoppingCart.push(
+        <ul className='list-group'>
+          <li className='list-group-item'>
+            <div className='d-inline proof'>
+              <h6 className='d-inline mr-1'><b>Nombre:</b></h6>
+              <p className='d-inline mr-3'>{item.name}</p>
+              <h6 className='d-inline mr-1'>Precio:</h6>
+              <p className='d-inline mr-3'>{item.price}</p>
+              <h6 className='d-inline mr-1'>{item.quantity} Unidades disponibles</h6>
+            </div>
+            <button className='btn btn-danger float-right ml-2' onClick={() => this.deleteItem(i)}>Eliminar</button>
+            <button className='btn btn-success float-right ml-2' onClick={() => this.deleteItem(i)}>Comprar</button>
+          </li>
+        </ul>
+      )
+    }
+    return shoppingCart
   }
 
   render() {
@@ -237,22 +312,22 @@ class App extends Component {
               <div className='sb-links'>
                 <ul className='list-group hdul'>
                   <li className='list-group-item sb'>
-                    <a className='sb-item hd' data-toggle='collapse' href='#categories' role='button' aria-expanded='false' aria-controls='categories' onClick={() => this.filterByCategory()}>
+                    <a className='sb-item hd' href='#categories' role='button' onClick={() => this.filterByCategory()}>
                       Categorías
                     </a>
-                    <FontAwesomeIcon icon={faChevronDown} />
-                    <div className='collapse' id='categories'>
-                      {this.renderCategories(categories)}
-                    </div>
+                    {this.renderCategories(categories)}
                   </li>
                   <li className='list-group-item sb'>
-                    <a className='sb-item hd' data-toggle='collapse' href='#filters' role='button' aria-expanded='false' aria-controls='filters'>
+                    <a className='sb-item hd' href='#filters' role='button'>
                       Filtros
                     </a>
-                    <FontAwesomeIcon icon={faChevronDown} />
-                    <div className='collapse' id='filters'>
-                      {this.renderFilters()}
-                    </div>
+                    {this.renderFilters()}
+                  </li>
+                  <li className='list-group-item sb'>
+                    <a className='sb-item hd' href='#sorts' role='button'>
+                      Ordenar Por
+                    </a>
+                    {this.renderSorts()}
                   </li>
                 </ul>
               </div>
@@ -275,13 +350,7 @@ class App extends Component {
                 </button>
               </div>
               <div class="modal-body">
-                <div class='row'>
-                  Este es el carrito de compras :)
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                {this.renderShoppingCart()}
               </div>
             </div>
           </div>
