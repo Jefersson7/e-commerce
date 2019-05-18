@@ -105,4 +105,13 @@
   .hdul {
     padding-top: 0;
   }
+
+  .navbar-nav {
+    align-items: start !important;
+    justify-content: space-between;
+  }
+  
+  .mbr {
+    padding-bottom: 5px;
+  }
 }

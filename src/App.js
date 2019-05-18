@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import React, { Component } from 'react';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingCart, faChevronDown, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faShoppingCart, faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { categories } from './categories.json'
 import { products } from './products.json'
 
@@ -17,6 +17,8 @@ class App extends Component {
       filterStock: null,
       orderOption: null,
       shoppingCartItems: localStorage,
+      showSearchBar: false,
+      searchValue: null,
       products: products
     }
   }
@@ -25,9 +27,11 @@ class App extends Component {
     return parseInt(e.replace(/[^0-9]/g, ''))
   }
 
-  filterByCategory = (id) => {
+  filterByCategory = (id, hasSublevels) => {
     this.setState({
-      products: id ? products.filter(i => i.sublevel_id === id) : products
+      products: id ? products.filter(i => i.sublevel_id === id) : products,
+      showSearchBar: !hasSublevels ? true : false,
+      searchValue: hasSublevels ? null : ''
     })
   }
 
@@ -70,6 +74,7 @@ class App extends Component {
   }
 
   productFilter = (products) => {
+    console.log(products)
     return this.filterByStock(this.filterByPrice(this.filterByAvailability(products)))
   }
 
@@ -87,6 +92,15 @@ class App extends Component {
     }
   }
 
+  filterSearch = (products) => {
+    let { searchValue } = this.state
+    if (searchValue === null || searchValue === '') {
+      return products
+    } else {
+      return products.filter(p => p.name.includes(searchValue))
+    }
+  }
+
   storeProduct = (product) => {
     localStorage.setItem(product.id, JSON.stringify(product))
     this.setState({ shoppingCartItems: localStorage })
@@ -97,7 +111,6 @@ class App extends Component {
     this.setState({ shoppingCartItems: localStorage })
   }
 
-
   renderCategories = (categories) => {
     return (
       <ul className="list-group">
@@ -107,7 +120,7 @@ class App extends Component {
               <li className="list-group-item sb" key={i.id}>
                 {i.sublevels ? (
                   <>
-                    <a className='sb-item' data-toggle='collapse' href={`#c${i.id}`} id={i.id} role='button' aria-expanded="false" aria-controls={`c${i.id}`} onClick={() => this.filterByCategory(i.id)}>
+                    <a className='sb-item' data-toggle='collapse' href={`#c${i.id}`} id={i.id} role='button' aria-expanded="false" aria-controls={`c${i.id}`} onClick={() => this.filterByCategory(i.id, true)}>
                       {i.name}
                     </a>
                     <FontAwesomeIcon icon={faChevronDown} />
@@ -117,7 +130,7 @@ class App extends Component {
                   </>
                 ) : (
                     <>
-                      <a href={`#c${i.id}`} id={i.id} role='button' onClick={() => this.filterByCategory(i.id)}>
+                      <a href={`#c${i.id}`} id={i.id} role='button' onClick={() => this.filterByCategory(i.id, false)}>
                         {i.name}
                       </a>
                     </>
@@ -142,6 +155,12 @@ class App extends Component {
             <ul className='list-group'>
               <li className='list-group-item sb'>
                 <div class="custom-control custom-radio">
+                  <input type="radio" class="custom-control-input" name='av' id="anyAvailable" value='none' onChange={() => this.setState({ filterAvailability: 0 })}></input>
+                  <label class="custom-control-label" for="anyAvailable">No filtrar</label>
+                </div>
+              </li>
+              <li className='list-group-item sb'>
+                <div class="custom-control custom-radio">
                   <input type="radio" class="custom-control-input" name='av' id="available" value='false' onChange={() => this.setState({ filterAvailability: 1 })}></input>
                   <label class="custom-control-label" for="available">Disponible</label>
                 </div>
@@ -162,6 +181,12 @@ class App extends Component {
           <FontAwesomeIcon icon={faChevronDown} />
           <div class='collapse' id='price'>
             <ul className='list-group'>
+              <li className='list-group-item sb'>
+                <div class='custom-control custom-radio'>
+                  <input type='radio' class='custom-control-input' name='pr' id='anyPrice' value='any' onChange={() => this.setState({ filterPrice: 0 })}></input>
+                  <label class='custom-control-label' for='anyPrice'>Cualquier precio</label>
+                </div>
+              </li>
               <li className='list-group-item sb'>
                 <div class='custom-control custom-radio'>
                   <input type='radio' class='custom-control-input' name='pr' id='less-5000' value='l-5000' onChange={() => this.setState({ filterPrice: 1 })}></input>
@@ -192,6 +217,12 @@ class App extends Component {
             <ul className='list-group'>
               <li className='list-group-item sb'>
                 <div class="custom-control custom-radio">
+                  <input type="radio" class="custom-control-input" name='stk' id="anystock" value='any' onChange={() => this.setState({ filterStock: 0 })}></input>
+                  <label class="custom-control-label" for="anystock">No filtrar</label>
+                </div>
+              </li>
+              <li className='list-group-item sb'>
+                <div class="custom-control custom-radio">
                   <input type="radio" class="custom-control-input" name='stk' id="nostock" value='no' onChange={() => this.setState({ filterStock: 1 })}></input>
                   <label class="custom-control-label" for="nostock">Sin cantidad disponible</label>
                 </div>
@@ -212,6 +243,12 @@ class App extends Component {
   renderSorts = () => {
     return (
       <ul className='list-group'>
+        <li className='list-group-item sb'>
+          <div className='custom-control custom-radio'>
+            <input type='radio' class='custom-control-input' name='sort' id='none' value='none' onChange={() => this.setState({ orderOption: 0 })}></input>
+            <label class='custom-control-label' for='none'>No ordenar</label>
+          </div>
+        </li>
         <li className='list-group-item sb'>
           <div className='custom-control custom-radio'>
             <input type='radio' class='custom-control-input' name='sort' id='sortPrice' value='price' onChange={() => this.setState({ orderOption: 1 })}></input>
@@ -235,7 +272,7 @@ class App extends Component {
   }
 
   renderProducts = (products) => {
-    return this.productSort(this.productFilter(products))
+    return this.filterSearch(this.productSort(this.productFilter(products)))
       .map(p => {
         var opts = {}
         if (!p.available) {
@@ -263,9 +300,8 @@ class App extends Component {
   renderShoppingCart = () => {
     let shoppingCart = []
     let { shoppingCartItems } = this.state
-    var data = Object.assign({}, shoppingCartItems)
-    for (var i in data) {
-      var item = JSON.parse(shoppingCartItems[i])
+    Object.values(shoppingCartItems).forEach(i => {
+      var item = JSON.parse(i)
       shoppingCart.push(
         <ul className='list-group'>
           <li className='list-group-item'>
@@ -276,17 +312,19 @@ class App extends Component {
               <p className='d-inline mr-3'>{item.price}</p>
               <h6 className='d-inline mr-1'>{item.quantity} Unidades disponibles</h6>
             </div>
-            <button className='btn btn-danger float-right ml-2' onClick={() => this.deleteItem(i)}>Eliminar</button>
-            <button className='btn btn-success float-right ml-2' onClick={() => this.deleteItem(i)}>Comprar</button>
+            <button className='btn btn-danger float-right ml-2' onClick={() => this.deleteItem(item.id)}>Eliminar</button>
+            <button className='btn btn-success float-right ml-2' onClick={() => this.deleteItem(item.id)}>Comprar</button>
           </li>
         </ul>
       )
-    }
+    })
     return shoppingCart
   }
 
   render() {
-    let { products } = this.state
+    let products = [...this.state.products]
+    const { showSearchBar } = this.state
+    console.log(products)
     return (
       <>
         <header className="navbar navbar-expand-md navbar-dark flex-column flex-md-row justify-content-between" id='bd-navbar'>
@@ -296,9 +334,16 @@ class App extends Component {
               <span className="navbar-toggler-icon"></span>
             </button>
             <div className="collapse navbar-collapse" id="shoppingCar">
-              <ul className='nav navbar-nav ml-auto'>
+              <ul className='nav navbar-nav ml-auto align-items-center'>
+                {showSearchBar && (
+                  <li className='mbr'>
+                    <form class="form-inline mr-3">
+                      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" value={this.state.searchValue} onChange={(e) => this.setState({ searchValue: e.target.value })}></input>
+                    </form>
+                  </li>
+                )}
                 <li>
-                  <button type='button' className='btn' data-toggle='modal' data-target='#modalShoppingCart' id="button" onClick={this.onClick}>
+                  <button type='button' className='btn' data-toggle='modal' data-target='#modalShoppingCart' id="button">
                     <FontAwesomeIcon icon={faShoppingCart} size='2x' />
                   </button>
                 </li>
