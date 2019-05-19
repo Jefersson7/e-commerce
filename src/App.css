@@ -8,7 +8,7 @@
 
 #button:hover {
   background-color: white;
-  color: black;
+  color: #274c2d;
 }
 
 #logo {
@@ -22,8 +22,13 @@
   z-index: 1000;
 }
 
+#quantity {
+  width: 75px;
+  text-align: center;
+}
+
 .sb-item {
-  padding-right: 15px;
+  margin-right: 15px;
 }
 
 .hd {
@@ -41,13 +46,13 @@
 }
 
 .list-group-item > a {
-  color: white;
+  color: #41774a;
   text-decoration: none;
 }
 
 .list-group-item > a:hover {
-  color: darkolivegreen;
-  background: white;
+  color: #dbe0dc;
+  background: #41774a;
   width: 100vh;
 }
 
@@ -62,8 +67,8 @@
 }
 
 .sb {
-  background-color: darkolivegreen;
-  color: white;
+  background-color: #dbe0dc;
+  color: #41774a;
   padding: 0.2rem 1.25rem;
   border: none;
 }
@@ -84,6 +89,69 @@
   line-height: 2.3rem;
 }
 
+.card, .sci {
+  background-color: #def7e2;
+  border: 1px solid #4d7053;
+}
+
+.product-name {
+  color: #23ce3f;
+}
+
+.sc-title {
+  color: #055e14;
+}
+
+.form-control:focus {
+  border-color: #1efc43;
+  box-shadow: 0 0 0 0.2rem rgba(35, 209, 64, 0.25)
+}
+
+.no-available {
+  color: red;
+  font-weight: bold;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  color: transparent;
+  background-color: transparent;
+  border-color: rgb(71, 124, 80);
+}
+
+button:focus {
+  outline: 1px solid #c2d3c5;
+}
+
+input[type='radio'] {
+  visibility: hidden;
+  position: absolute;
+}
+
+input[type=radio] + label {
+  cursor: pointer;
+}
+
+input[type=radio] + label:hover {
+  color: #dbe0dc;
+  background: #41774a;
+}
+
+input[type=radio] + label:before {
+  height: 16px;
+  width: 16px;
+  margin-right: 4px;
+  content: ' ';
+  display: inline-block;
+  vertical-align: baseline;
+  border: 0.5px solid #477c50;
+  border-radius: 50%;
+  transition: 0.4s
+}
+
+input[type=radio]:checked + label:before {
+  box-shadow: 0 0 0 0.2rem rgba(71, 124, 80, 0.5), inset 0 0 0 4px rgb(71, 124, 80);
+}
+
 @media (min-width: 768px) {
   #sidebar {
     position: fixed;
@@ -91,12 +159,13 @@
     left: 0;
     z-index: 100;
     height: calc(100vh - 74px);
-    background: darkolivegreen;
+    background: #dbe0dc;
     overflow-y: auto;
   }
 }
 
 @media (max-width: 768px) {
+
   .sb-links {
     margin-right: -15px;
     margin-left: -15px;
