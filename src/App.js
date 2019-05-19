@@ -274,7 +274,7 @@ class App extends Component {
     return this.filterSearch(this.productSort(this.productFilter(products)))
       .map(p => {
         var opts = {}
-        if (!p.available) {
+        if (!p.available || p.quantity === 0) {
           opts['disabled'] = 'disabled'
         }
         return (
